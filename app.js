@@ -1,29 +1,37 @@
-function criaCartao(categoria, pergunta, resposta) {
-    let container = document.getElementById('container')
-    let cartao = document.createElement('article')
-    cartao.className = 'cartao'
+const botaoMostraPalavras = document.querySelector('#botao-palavrachave');
 
-    cartao.innerHTML = `
-    <div class="cartao__conteudo">
-    <h3>${categoria}</h3>
-    <div class="cartao__conteudo__pergunta">
-        <p>${pergunta}</p>
-    </div>
-    <div class="cartao__conteudo__resposta">
-        <p>${resposta}</p>
-    </div>
-    </div>
-    `
+botaoMostraPalavras.addEventListener('click', mostraPalavrasChave);
 
-    let respostaEstaVisivel = false
+function mostraPalavrasChave() {
+    const texto = document.querySelector('#entrada-de-texto').value;
+    const campoResultado = document.querySelector('#resultado-palavrachave');
+    const palavrasChave = processaTexto(texto);
 
-    function viraCartao() {
-        respostaEstaVisivel = !respostaEstaVisivel
-        cartao.classList.toggle('active', respostaEstaVisivel)
+    campoResultado.textContent = palavrasChave.join(", ");
+}
+
+function processaTexto(texto) {
+    let palavras = texto.split(/\P{L}+/u);
+    const frequencias = contaFrequencias(palavras);
+    let ordenadas = Object.keys(frequencias).sort(ordenaPalavra);
+
+    function ordenaPalavra(p1, p2) {
+        return frequencias[p2] - frequencias[p1];
     }
-    cartao.addEventListener('click', viraCartao)
 
+    console.log(ordenadas);
+    return ordenadas.slice(0, 10);
+}
 
-    container.appendChild(cartao)
-
+function contaFrequencias(palavras) {
+    let frequencias = {};
+    for (let i of palavras) {
+        frequencias[i] = 0;
+        for (let j of palavras) {
+            if (i == j) {
+                frequencias[i]++;
+            }
+        }
+    }
+    return frequencias;
 }
